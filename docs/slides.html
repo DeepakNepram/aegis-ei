@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis.ei - Governance Infrastructure for AI-Driven Supply Chains</title>
+    <!-- Reveal.js styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/dracula.min.css"
+        id="theme">
+
+    <style>
+        .reveal .slides section .fragment.highlight-current-blue.current-fragment {
+            color: #58a6ff;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4,
+        .reveal h5,
+        .reveal h6 {
+            font-family: inherit;
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+
+        .reveal h1 {
+            font-size: 2.2em;
+        }
+
+        .reveal h2 {
+            font-size: 1.6em;
+            color: #58a6ff;
+        }
+
+        .reveal h3 {
+            font-size: 1.3em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            font-size: 0.6em;
+            font-weight: bold;
+            margin: 0 0.2em;
+        }
+
+        .badge.t0 {
+            background: #ff4d4d;
+            color: white;
+        }
+
+        .badge.t1 {
+            background: #ffaa00;
+            color: #333;
+        }
+
+        .badge.t2 {
+            background: #58a6ff;
+            color: white;
+        }
+
+        .badge.t3 {
+            background: #00cc66;
+            color: white;
+        }
+
+        .code-block {
+            background: #1e1e1e !important;
+            border-radius: 8px;
+            font-size: 0.7em !important;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .col {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .list-spacing li {
+            margin-bottom: 0.5em;
+        }
+
+        .accent {
+            color: #58a6ff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Intro Slide -->
+            <section>
+                <h1>⬡ Aegis.ei</h1>
+                <h3>Governance Infrastructure for<br>AI-Driven Supply Chains</h3>
+                <p>
+                    <small>Created by <span class="accent">Deepak Nepram</span></small><br>
+                    <small>SAP Hackfest 2026</small>
+                </p>
+                <aside class="notes">
+                    Welcome to the presentation for Aegis.ei. This prototype was built for the SAP Hackfest.
+                </aside>
+            </section>
+
+            <!-- The Problem -->
+            <section>
+                <h2>The Problem</h2>
+                <p>AI agents (like SAP Joule) are increasingly making autonomous procurement decisions.</p>
+                <div class="fragment"
+                    style="margin-top: 40px; border-left: 4px solid #ff4d4d; padding-left: 20px; text-align: left;">
+                    <h3>The Risks:</h3>
+                    <ul class="list-spacing">
+                        <li>Unapproved high-value purchases</li>
+                        <li>Blocked vendors getting inadvertently re-engaged</li>
+                        <li>No audit trail for AI reasoning</li>
+                        <li>No "Kill Switch" when the AI hallucinates</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- The Solution -->
+            <section>
+                <h2>The Solution: Aegis.ei</h2>
+                <p>A middleware layer sitting <strong>between</strong> the AI Agent and the ERP.</p>
+                <div
+                    style="font-size: 0.8em; margin-top: 30px; background: rgba(88, 166, 255, 0.1); padding: 20px; border-radius: 8px; border: 1px dashed #58a6ff;">
+                    AI Agent ➜ <strong>Aegis.ei (Risk Engine)</strong> ➜ ERP System (S/4HANA)
+                </div>
+                <ul class="list-spacing" style="font-size: 0.8em; margin-top: 30px;">
+                    <li class="fragment">Intercepts AI-generated Purchase Orders.</li>
+                    <li class="fragment">Scores risk based on complex heuristics.</li>
+                    <li class="fragment">Dynamically assigns a tiered autonomy level.</li>
+                </ul>
+            </section>
+
+            <!-- Tiered Autonomy -->
+            <section>
+                <h2>Tiered Autonomy Model</h2>
+                <table style="font-size: 0.6em; width: 100%; text-align: left;">
+                    <thead>
+                        <tr>
+                            <th>Tier</th>
+                            <th>Description</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment">
+                            <td><span class="badge t0">T0 : Manual</span></td>
+                            <td>AI disabled. Human action only.</td>
+                            <td>Blocked vendors, overrides.</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="badge t1">T1 : Suggest</span></td>
+                            <td>AI recommends, human decides.</td>
+                            <td>High risk, new vendors.</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="badge t2">T2 : Co-Decide</span></td>
+                            <td>AI prepares, human confirms.</td>
+                            <td>Medium risk, above limits.</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="badge t3">T3 : Auto-Execute</span></td>
+                            <td>AI executes independently.</td>
+                            <td>Low risk, routine orders.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Key Features -->
+            <section>
+                <section>
+                    <h2>System Highlights</h2>
+                    <ul class="list-spacing">
+                        <li>🔴 <strong>The Kill Switch:</strong> Instantly downgrades all AI actions to T1.</li>
+                        <li>📊 <strong>Composite Risk Scoring:</strong> Evaluates amount, vendor, category &
+                            seasonality.</li>
+                        <li>📋 <strong>Accountability Ledger:</strong> Immutable audit trail of every human/AI decision.
+                        </li>
+                        <li>🧠 <strong>Enterprise Intelligence Loop:</strong> (See next slide)</li>
+                    </ul>
+                    <p style="font-size: 0.6em; margin-top: 30px;">👇 <em>Press Down for more details</em></p>
+                </section>
+
+                <section>
+                    <h2>🧠 Enterprise Intelligence Loop</h2>
+                    <p style="font-size: 0.8em;">Aegis.ei learns from human overrides.</p>
+                    <ul class="list-spacing" style="font-size: 0.7em;">
+                        <li>If humans consistently override T3 POs from "Vendor X", the ML model notices.</li>
+                        <li>It dynamically recommends adjusting the Auto-Approve Thresholds.</li>
+                        <li>Powered by <strong>scikit-learn Logistic Regression</strong> under the hood.</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- Architecture -->
+            <section>
+                <h2>Tech Stack / Architecture</h2>
+                <div class="container" style="font-size: 0.7em;">
+                    <div class="col" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                        <h3>Frontend</h3>
+                        <ul>
+                            <li>Vanilla HTML5 / CSS3</li>
+                            <li>Vanilla JavaScript</li>
+                            <li>Zero build pipeline</li>
+                        </ul>
+                    </div>
+                    <div class="col" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                        <h3>Backend</h3>
+                        <ul>
+                            <li>Python 3.9+</li>
+                            <li>Flask (REST API)</li>
+                            <li>SQLite (Persistence)</li>
+                            <li>pandas / scikit-learn (ML)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Disclosure -->
+            <section>
+                <h2>🤖 Built with AI</h2>
+                <h4 style="color:#aaa;">Transparency Disclosure</h4>
+                <div style="font-size: 0.7em; text-align: left;">
+                    <p>This prototype was developed collaboratively using <strong>Google Antigravity / Gemini</strong>
+                        AI coding tools.</p>
+
+                    <div class="container" style="align-items: flex-start; margin-top: 20px;">
+                        <div class="col">
+                            <strong>AI Contributions:</strong>
+                            <ul style="font-size: 0.8em;">
+                                <li>HTML/CSS scaffolding</li>
+                                <li>Flask boilerplate</li>
+                                <li>ML pipeline implementation</li>
+                                <li>Syntax debugging</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <strong>Human (My) Contributions:</strong>
+                            <ul style="font-size: 0.8em;">
+                                <li>Core concept (Governance Middleware)</li>
+                                <li>Architecture (Tiered Autonomy, Kill Switch)</li>
+                                <li>Prompt engineering & direction</li>
+                                <li>Supply chain / domain context</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p style="margin-top:20px; font-style: italic; text-align: center; color: #58a6ff;">
+                        "AI coding tools amplify human architectural thinking; they don't replace it."
+                    </p>
+                </div>
+            </section>
+
+            <!-- Roadmap -->
+            <section>
+                <h2>Future Roadmap</h2>
+                <ul class="list-spacing" style="font-size: 0.8em;">
+                    <li>🔌 <strong>Integration:</strong> Native SAP BTP & Joule integration APIs</li>
+                    <li>👥 <strong>RBAC:</strong> Role-based access control for multiple managers</li>
+                    <li>💾 <strong>Persistence:</strong> Migration from SQLite to PostgreSQL</li>
+                    <li>📦 <strong>Deployment:</strong> Dockerization for easy enterprise deployment</li>
+                </ul>
+            </section>
+
+            <!-- End Slide -->
+            <section>
+                <h1>Thank You</h1>
+                <p>Repository: <a href="https://github.com/DeepakNepram/aegis-ei"
+                        style="color: #58a6ff;">github.com/DeepakNepram/aegis-ei</a></p>
+                <div style="margin-top: 50px;">
+                    <h3>Questions?</h3>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            transition: 'fade', // none/fade/slide/convex/concave/zoom
+            controlsTutorial: true,
+        });
+    </script>
+</body>
+
+</html>

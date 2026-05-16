@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis.ei — Governance Infrastructure for AI-Driven Supply Chains</title>
+    <meta name="description" content="Aegis.ei is a governance and control layer between AI tools and enterprise ERP/supply chain systems.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     SETUP SCREEN (one-time, localStorage-gated)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="setupScreen">
+    <div class="setup-card">
+        <h1>⬡ Aegis.ei</h1>
+        <p class="tagline">Governance Infrastructure for AI-Driven Supply Chains</p>
+        <h2>Enterprise Configuration</h2>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="cfgName">Enterprise Name</label>
+                <input type="text" id="cfgName" placeholder="e.g. Chakra Textiles Ltd.">
+            </div>
+            <div class="form-group">
+                <label for="cfgIndustry">Industry / Sector</label>
+                <select id="cfgIndustry">
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Retail">Retail</option>
+                    <option value="FMCG">FMCG</option>
+                    <option value="Pharmaceuticals">Pharmaceuticals</option>
+                    <option value="Logistics">Logistics</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cfgCurrency">Base Currency</label>
+                <select id="cfgCurrency">
+                    <option value="INR">INR ₹</option>
+                    <option value="USD">USD $</option>
+                    <option value="EUR">EUR €</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cfgThreshold">Auto-Approval Threshold</label>
+                <input type="number" id="cfgThreshold" placeholder="50000" value="50000">
+            </div>
+            <div class="form-group">
+                <label for="cfgBudget">Procurement Budget (Monthly)</label>
+                <input type="number" id="cfgBudget" placeholder="500000" value="500000">
+            </div>
+            <div class="form-group">
+                <label for="cfgMaxPO">Max Single PO Limit</label>
+                <input type="number" id="cfgMaxPO" placeholder="200000" value="200000">
+            </div>
+            <div class="form-group full-width">
+                <label>Risk Appetite</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="cfgRiskAppetite" value="conservative"> Conservative</label>
+                    <label><input type="radio" name="cfgRiskAppetite" value="balanced" checked> Balanced</label>
+                    <label><input type="radio" name="cfgRiskAppetite" value="aggressive"> Aggressive</label>
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label for="cfgPreferred">Preferred Vendors (comma-separated)</label>
+                <textarea id="cfgPreferred" placeholder="TechParts India Pvt Ltd, Global Steel Corp">TechParts India Pvt Ltd, Global Steel Corp</textarea>
+            </div>
+            <div class="form-group full-width">
+                <label for="cfgBlocked">Blocked Vendors (comma-separated)</label>
+                <textarea id="cfgBlocked" placeholder=""></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label>Volatility Mode</label>
+                <div class="toggle-row">
+                    <span>When ON, thresholds tighten by 20% and retraining cadence increases</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cfgVolatility">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="saveEnterpriseConfig()">Start Using Aegis.ei →</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MAIN APPLICATION
+     ═══════════════════════════════════════════════════════════════════ -->
+<div id="mainApp">
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div>
+                <div class="logo-text">⬡ Aegis.ei</div>
+                <div class="logo-tagline">Governance Infrastructure for AI-Driven Supply Chains</div>
+            </div>
+        </div>
+        <div class="header-center">
+            <div class="enterprise-name" id="headerEntName">Enterprise</div>
+        </div>
+        <div class="header-right">
+            <span class="agent-badge" id="agentBadge">
+                <span class="dot"></span> AI Agent Active
+            </span>
+            <button class="settings-btn" onclick="openSettings()" title="Edit Settings">⚙️</button>
+            <button class="kill-switch" id="killSwitch" onclick="toggleAgentPause()">⏸ Pause AI Agent</button>
+        </div>
+    </header>
+
+    <!-- Pause Banner -->
+    <div class="pause-banner" id="pauseBanner">
+        ⚠️ AI Agent is PAUSED. All decisions require human approval. Autonomy set to T1 across all workflows.
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="workflow" onclick="showTab('workflow')">Workflow Designer</button>
+        <button class="nav-tab" data-tab="decisions" onclick="showTab('decisions')">Manager Decisions</button>
+        <button class="nav-tab" data-tab="audit" onclick="showTab('audit')">Audit Ledger</button>
+        <button class="nav-tab" data-tab="metrics" onclick="showTab('metrics')">Metrics & Intelligence</button>
+        <button class="nav-tab" data-tab="mlloop" onclick="showTab('mlloop')">Enterprise Intelligence</button>
+    </nav>
+
+    <!-- ═══════════════ TAB 1 — WORKFLOW DESIGNER ══════════════════ -->
+    <div id="tab-workflow" class="tab-panel active">
+        <div class="workflow-card">
+            <h2>Purchase Order Approval Workflow</h2>
+            <p class="subtitle">Visual flow of how decisions move through the Aegis.ei governance layer</p>
+
+            <div class="workflow-flow">
+                <div class="wf-step">
+                    <div class="step-role">👤 Employee / Buyer</div>
+                    <div class="step-name">Submit PO Request</div>
+                    <span class="tier-badge tier-t0">T0 Manual</span>
+                </div>
+                <span class="wf-arrow">→</span>
+                <div class="wf-step">
+                    <div class="step-role">💾 ERP System</div>
+                    <div class="step-name">Auto-Generated PO</div>
+                    <span class="tier-badge tier-t0">T0 Manual</span>
+                </div>
+                <span class="wf-arrow">→</span>
+                <div class="wf-step" style="border-color: var(--accent);">
+                    <div class="step-role">🛡️ Aegis.ei Middleware</div>
+                    <div class="step-name">Intercepts & Governs</div>
+                    <span class="tier-badge tier-t1">T1–T3 Dynamic</span>
+                </div>
+                <span class="wf-arrow">→</span>
+                <div class="wf-step">
+                    <div class="step-role">🤖 Joule AI Agent</div>
+                    <div class="step-name">Pre-Screen PO</div>
+                    <span class="tier-badge tier-t3" id="wfAgentBadge">T3 Auto-Execute</span>
+                </div>
+                <span class="wf-arrow">→</span>
+                <div class="wf-step">
+                    <div class="step-role">📊 Risk Engine</div>
+                    <div class="step-name">Calculate Risk Score</div>
+                    <span class="tier-badge tier-t2">T2 Co-Decide</span>
+                </div>
+                <span class="wf-arrow">→</span>
+                <div class="wf-branch">
+                    <span>▼</span>
+                    <span style="font-size:.65rem;">LOW / MED → T3&nbsp;&nbsp;|&nbsp;&nbsp;HIGH / CRIT → T1</span>
+                </div>
+                <span class="wf-arrow">→</span>
+                <div class="wf-step">
+                    <div class="step-role">💾 ERP Booking</div>
+                    <div class="step-name">PO Confirmed</div>
+                    <span class="tier-badge tier-t0">T0 System</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier Definitions -->
+        <div class="tier-grid">
+            <div class="tier-card">
+                <h4><span class="tier-badge tier-t0">T0</span> Manual Only</h4>
+                <p>AI is completely disabled. All decisions made by humans. Use: sensitive negotiations, blocked vendors, legal holds.</p>
+            </div>
+            <div class="tier-card">
+                <h4><span class="tier-badge tier-t1">T1</span> Suggest Mode</h4>
+                <p>AI analyzes and recommends. Human must manually approve, modify, or reject. AI has no execution power.</p>
+            </div>
+            <div class="tier-card">
+                <h4><span class="tier-badge tier-t2">T2</span> Co-Decide Mode</h4>
+                <p>AI prepares the action for human confirmation. Decision queues with a countdown. Human confirms or overrides.</p>
+            </div>
+            <div class="tier-card">
+                <h4><span class="tier-badge tier-t3">T3</span> Auto-Execute Mode</h4>
+                <p>AI evaluates all rules and auto-approves if conditions are met. Notification sent. Routine, low-risk POs from trusted vendors.</p>
+            </div>
+        </div>
+
+        <!-- Delegation Contract Panel -->
+        <div class="delegation-panel">
+            <h3>Delegation Contract Summary</h3>
+            <div class="delegation-grid" id="delegationGrid">
+                <!-- Filled by JS -->
+            </div>
+            <div class="delegation-warning">
+                ⚠️ VIP / Preferred vendors still require co-decision (T2) for amounts above the Max PO Limit.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ TAB 2 — MANAGER DECISIONS ═════════════════ -->
+    <div id="tab-decisions" class="tab-panel">
+        <div id="riskAlertBanner"></div>
+        <h2 style="margin-bottom: 18px;">Live Decision Queue</h2>
+        <div id="poContainer">
+            <!-- PO cards rendered by JS -->
+        </div>
+    </div>
+
+    <!-- ═══════════════ TAB 3 — AUDIT LEDGER ══════════════════════ -->
+    <div id="tab-audit" class="tab-panel">
+        <h2 style="margin-bottom: 18px;">📋 Accountability Ledger</h2>
+        <div class="audit-controls" id="auditControls">
+            <button class="audit-filter active" data-filter="all" onclick="filterAudit('all')">All</button>
+            <button class="audit-filter" data-filter="ai" onclick="filterAudit('ai')">AI Actions</button>
+            <button class="audit-filter" data-filter="manager" onclick="filterAudit('manager')">Manager Decisions</button>
+            <button class="audit-filter" data-filter="override" onclick="filterAudit('override')">Overrides Only</button>
+            <button class="audit-filter" data-filter="system" onclick="filterAudit('system')">System Events</button>
+        </div>
+        <div id="auditContainer"></div>
+    </div>
+
+    <!-- ═══════════════ TAB 4 — METRICS & INTELLIGENCE ════════════ -->
+    <div id="tab-metrics" class="tab-panel">
+        <h2 style="margin-bottom: 18px;">📊 Metrics & Intelligence</h2>
+
+        <div class="kpi-grid" id="kpiGrid">
+            <!-- 6 KPI cards rendered by JS -->
+        </div>
+
+        <div id="teamingHealth"></div>
+
+        <div class="charts-row">
+            <div class="chart-card">
+                <h3>Risk Distribution</h3>
+                <div id="riskDistChart"></div>
+            </div>
+            <div class="chart-card">
+                <h3>Autonomy Tier Usage</h3>
+                <div id="tierUsageChart"></div>
+            </div>
+        </div>
+
+        <div class="chart-card" id="justifyAnalysis" style="display:none;">
+            <h3>Override Justification Analysis</h3>
+            <div id="justifyTableContainer"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ TAB 5 — ENTERPRISE INTELLIGENCE (ML) ══════ -->
+    <div id="tab-mlloop" class="tab-panel">
+        <div class="ml-header">
+            <h2>🧠 Enterprise Intelligence Loop</h2>
+            <p class="subtitle" id="mlSubtitle">Aegis.ei learns from your team's decisions to continuously refine risk thresholds and governance policies.</p>
+        </div>
+
+        <!-- A) Learning Configuration -->
+        <div class="ml-section">
+            <h3>⚙️ Learning Configuration</h3>
+            <div id="volatilityAlert"></div>
+            <div class="cadence-options" id="cadenceOptions">
+                <label class="cadence-option active" onclick="setCadence(this)">
+                    <input type="radio" name="cadence" value="realtime" checked> Real-time (every decision)
+                </label>
+                <label class="cadence-option" onclick="setCadence(this)">
+                    <input type="radio" name="cadence" value="weekly"> Weekly
+                </label>
+                <label class="cadence-option" onclick="setCadence(this)">
+                    <input type="radio" name="cadence" value="monthly"> Monthly
+                </label>
+                <label class="cadence-option" onclick="setCadence(this)">
+                    <input type="radio" name="cadence" value="trigger"> On Trigger (override &gt; 60%)
+                </label>
+            </div>
+            <p class="learn-status" id="cadenceLabel">Current mode: Real-time</p>
+        </div>
+
+        <!-- B) Run Learning -->
+        <div class="ml-section">
+            <h3>🚀 Run Learning Cycle</h3>
+            <button class="btn-learn" id="btnLearn" onclick="runLearning()">🧠 Run Enterprise Intelligence Cycle</button>
+            <p class="learn-status" id="learnStatus"></p>
+        </div>
+
+        <!-- C) Results -->
+        <div class="ml-section" id="mlResults" style="display:none;">
+            <h3>📈 Learning Results</h3>
+            <div class="results-panel" id="resultsPanel"></div>
+        </div>
+
+        <!-- D) Risk Predictions -->
+        <div class="ml-section">
+            <h3>🔮 Predicted Risk for Incoming POs</h3>
+            <p style="font-size:.82rem;color:var(--text-sec);margin-bottom:14px;">Based on current model and enterprise patterns</p>
+            <div class="predictions-grid" id="predictionsGrid"></div>
+        </div>
+    </div>
+
+</div><!-- /mainApp -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL: Modify Amount
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modifyModal">
+    <div class="modal-card">
+        <h3>✏️ Modify Purchase Order Amount</h3>
+        <p class="modal-subtitle">Adjust the amount and confirm before booking in ERP.</p>
+        <div class="modal-row">
+            <span class="modal-label">PO ID:</span>
+            <span class="modal-value" id="modModalPoId"></span>
+        </div>
+        <div class="modal-row">
+            <span class="modal-label">Current Amount:</span>
+            <span class="modal-value" id="modModalCurrent"></span>
+        </div>
+        <div class="modal-row">
+            <label class="modal-label" for="modModalNewAmt">New Amount:</label>
+            <input type="number" class="modal-input" id="modModalNewAmt" oninput="updateModifyPreview()">
+        </div>
+        <div class="modal-row">
+            <span class="modal-label">New Amount Preview:</span>
+            <span class="modal-value" id="modModalPreview" style="color:var(--accent);font-weight:700;">—</span>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModifyModal()">Cancel</button>
+            <button class="btn btn-approve" onclick="confirmModifyAmount()">✅ Save & Approve</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL: Override Justification
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="justifyModal">
+    <div class="modal-card" style="max-width:540px;">
+        <h3>⚠️ Risk Override Justification</h3>
+        <p class="modal-subtitle">You are approving a HIGH/CRITICAL risk PO. Please select your justification:</p>
+        <div class="justify-warning" id="justifyWarning"></div>
+        <div class="justify-checkboxes">
+            <label><input type="checkbox" value="Conducted independent supplier verification"> Conducted independent supplier verification</label>
+            <label><input type="checkbox" value="Received written assurance from supplier"> Received written assurance from supplier</label>
+            <label><input type="checkbox" value="Confirmed with inventory team — stock critically low"> Confirmed with inventory team — stock critically low</label>
+            <label><input type="checkbox" value="Approved by senior management verbally"> Approved by senior management verbally</label>
+            <label><input type="checkbox" value="Price is significantly better than market rate"> Price is significantly better than market rate</label>
+            <label><input type="checkbox" value="Supplier has mitigating history not reflected in system"> Supplier has mitigating history not reflected in system</label>
+            <label><input type="checkbox" value="Emergency procurement — no alternatives available"> Emergency procurement — no alternatives available</label>
+            <label>
+                <input type="checkbox" value="Other" id="justifyOtherCheck"> Other
+                <input type="text" class="other-text" id="justifyOtherText" placeholder="Describe…" style="display:none;">
+            </label>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeJustifyModal()">Cancel</button>
+            <button class="btn btn-approve" id="btnConfirmJustify" onclick="confirmApproveWithJustification()" disabled>✅ Confirm Approval with Justification</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
