@@ -129,21 +129,22 @@ The app runs at **http://127.0.0.1:5000**
 
 ```
 aegis-ei/
-├── index.html           # Frontend entry point
-├── styles.css           # All CSS styles
-├── app.js               # Core application logic (762 lines)
+├── index.html                   # Frontend entry point
+├── styles.css                   # All CSS styles
+├── app.js                       # Core application logic (762 lines)
 ├── backend/
-│   ├── __init__.py      # Package marker
-│   ├── config.py        # Centralised configuration
-│   ├── models.py        # SQLite helpers
-│   ├── server.py        # Flask API server
-│   ├── train_model.py   # ML training utilities
-│   └── init_db.py       # Database seeder (15+ sample rows)
+│   ├── __init__.py              # Package marker
+│   ├── config.py                # Centralised configuration
+│   ├── models.py                # SQLite helpers
+│   ├── server.py                # Flask API server
+│   ├── train_model.py           # ML training utilities
+│   └── init_db.py               # Database seeder (15+ sample rows)
 ├── docs/
-│   └── slides.html      # Project presentation (HTML slide deck)
-├── requirements.txt     # Python dependencies
-├── LICENSE              # MIT License
-└── README.md            # This file
+│   └── slides.html              # Project presentation (HTML slide deck)
+│   └── Aegis-ei_Prototype.pptx  # Prototype Interface presentation
+├── requirements.txt             # Python dependencies
+├── LICENSE                      # MIT License
+└── README.md                    # This file
 ```
 
 > **Note:** The `data/` (SQLite DB) and `models/` (trained `.pkl` files) folders are auto-generated at runtime and excluded from version control via `.gitignore`.
